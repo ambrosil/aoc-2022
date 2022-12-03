@@ -1,6 +1,6 @@
 fun main() {
 
-    fun Set<Char>.points(): Int {
+    fun Set<Char>.score(): Int {
         val c = single()
         return if (c.isLowerCase()) {
             1 + (c - 'a')
@@ -17,23 +17,23 @@ fun main() {
     fun part1(input: List<String>) =
         input.sumOf { item ->
             val (first, second) = item.halve()
-            first.toSet()
-                .intersect(second.toSet())
-                .points()
+            (first intersect second).score()
         }
 
     fun part2(input: List<String>) =
-        input.chunked(3)
-            .map {
-                it.fold(it[0].toSet()) { acc, s ->
-                    acc.intersect(s.toSet())
-                }
-            }
+        input
+            .chunked(3)
             .sumOf {
-                it.points()
+                it.fold(it[0].toSet()) {
+                    acc, s -> acc intersect s
+                }
+                .score()
             }
 
     val input = readInput("Day03")
     println(part1(input))
     println(part2(input))
 }
+
+infix fun String.intersect(o: String) = toSet() intersect o.toSet()
+infix fun Set<Char>.intersect(o: String) = this intersect o.toSet()
