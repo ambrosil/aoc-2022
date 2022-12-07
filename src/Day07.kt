@@ -65,16 +65,11 @@ fun main() {
         }
     }
 
-    val input = readInput("Day07")
+    val input = readInput("test")
     println(part1(input))
     println(part2(input))
 }
 
 private fun String.isNumber(): Boolean {
-    return try {
-        toInt()
-        true
-    } catch (e: Exception) {
-        false
-    }
+    return toIntOrNull() != null
 }
