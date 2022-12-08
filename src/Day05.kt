@@ -94,7 +94,7 @@ fun main() {
         }.joinToString(separator = "")
     }
 
-    val input = readInput("Day05")
+    val input = readInput("inputs/Day05")
     println(part1(input))
     println(part2(input))
 }

@@ -14,7 +14,7 @@ fun main() {
                 first overlaps second
             }
 
-    val input = readInput("Day04")
+    val input = readInput("inputs/Day04")
     println(part1(input))
     println(part2(input))
 }

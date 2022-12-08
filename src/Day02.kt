@@ -78,7 +78,7 @@ fun main() {
             .sumOf { it.totalPoints() }
     }
 
-    val input = readInput("Day02")
+    val input = readInput("inputs/Day02")
     println(part1(input))
     println(part2(input))
 }

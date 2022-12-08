@@ -16,7 +16,7 @@ fun main() {
             .sum()
     }
 
-    val input = readInput("Day01")
+    val input = readInput("inputs/Day01")
     println(part1(input))
     println(part2(input))
 }
