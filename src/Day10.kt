@@ -1,5 +1,3 @@
-import java.lang.Thread.sleep
-
 fun main() {
 
     data class Step(val cycle: Int, val sum: Int)
@@ -14,8 +12,8 @@ fun main() {
                 "noop" -> steps.add(Step(cycle++, sum))
                 else -> {
                     val (_, amount) = it.split(" ")
-                    steps.add(Step(cycle++, sum))
-                    steps.add(Step(cycle++, sum))
+                    steps += Step(cycle++, sum)
+                    steps += Step(cycle++, sum)
                     sum += amount.toInt()
                 }
             }
