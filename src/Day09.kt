@@ -7,7 +7,7 @@ data class Point(var x: Int, var y: Int) {
         y += p.y
     }
 
-    fun follow(head: Point) {
+    infix fun follow(head: Point) {
         val dx = head.x - x
         val dy = head.y - y
 
@@ -18,23 +18,6 @@ data class Point(var x: Int, var y: Int) {
 }
 
 fun main() {
-
-    fun draw(knots: List<Point>) {
-        val size = 10
-        for (j in -size..size) {
-            for (i in -size..size) {
-                val knot = knots.find { it.x == i && it.y == j }
-                if (knot != null) {
-                    if (knots.indexOf(knot) != 0) {
-                        print("🟨")
-                    } else print("\uD83D\uDFE5")
-                } else {
-                    print("⬛")
-                }
-            }
-            println()
-        }
-    }
 
     fun part1(input: List<String>): Int {
         val head = Point(0, 0)
@@ -82,18 +65,14 @@ fun main() {
                     if (index == 0) {
                         knot += dirVector
                     } else {
-                        knot.follow(knots[index - 1])
+                        knot follow knots[index-1]
                     }
 
                     if (index == 9) {
                         visited.add(knot.copy())
                     }
                 }
-
-                //draw(knots)
             }
-
-            Thread.sleep(100)
         }
 
         return visited.size
