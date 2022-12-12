@@ -1,23 +1,23 @@
 import kotlin.math.abs
 import kotlin.math.sign
 
-data class Point(var x: Int, var y: Int) {
-    operator fun plusAssign(p: Point) {
-        x += p.x
-        y += p.y
-    }
+fun main() {
 
-    infix fun follow(head: Point) {
-        val dx = head.x - x
-        val dy = head.y - y
+    data class Point(var x: Int, var y: Int) {
+        operator fun plusAssign(p: Point) {
+            x += p.x
+            y += p.y
+        }
 
-        if (abs(dx) > 1 || abs(dy) > 1) {
-            this += Point(dx.sign, dy.sign)
+        infix fun follow(head: Point) {
+            val dx = head.x - x
+            val dy = head.y - y
+
+            if (abs(dx) > 1 || abs(dy) > 1) {
+                this += Point(dx.sign, dy.sign)
+            }
         }
     }
-}
-
-fun main() {
 
     fun part1(input: List<String>): Int {
         val head = Point(0, 0)
