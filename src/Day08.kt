@@ -15,36 +15,6 @@ fun main() {
     println(part2(input))
 }
 
-fun List<List<Char>>.forEachRowCol(block: (row: Int, col: Int) -> Unit) {
-    for (i in indices) {
-        val inner = this[i]
-        for (j in inner.indices) {
-            block(i, j)
-        }
-    }
-}
-
-fun List<List<Char>>.maxOf(block: (row: Int, col: Int) -> Int): Int {
-    var max = 0
-
-    forEachRowCol { row, col ->
-        val value = block(row, col)
-        max = if (value > max) value else max
-    }
-
-    return max
-}
-
-fun List<List<Char>>.count(block: (row: Int, col: Int) -> Boolean): Int {
-    var count = 0
-
-    forEachRowCol { row, col ->
-        count += if (block(row, col)) 1 else 0
-    }
-
-    return count
-}
-
 fun List<List<Char>>.score(row: Int, col: Int) = scoreUp(row, col) * scoreDown(row, col) * scoreLeft(row, col) * scoreRight(row, col)
 
 fun List<List<Char>>.scoreUp(row: Int, col: Int): Int {

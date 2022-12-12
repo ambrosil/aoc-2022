@@ -15,11 +15,9 @@ fun main() {
         }
 
         fun find(c: Char): Point {
-            heightmap.forEachIndexed { x, _ ->
-                heightmap[x].forEachIndexed { y, _ ->
-                    if (heightmap[x][y] == c) {
-                        return Point(x, y)
-                    }
+            heightmap.forEach { x, y ->
+                if (heightmap[x][y] == c) {
+                    return Point(x, y)
                 }
             }
 
@@ -43,16 +41,16 @@ fun main() {
                 val distance = distances[point]!! + 1
                 val height = height(point)
 
-                check(Point(point.x-1, point.y), distance, height)
-                check(Point(point.x+1, point.y), distance, height)
-                check(Point(point.x, point.y-1), distance, height)
-                check(Point(point.x, point.y+1), distance, height)
+                walk(Point(point.x-1, point.y), distance, height)
+                walk(Point(point.x+1, point.y), distance, height)
+                walk(Point(point.x, point.y-1), distance, height)
+                walk(Point(point.x, point.y+1), distance, height)
             }
 
             return distances[end] ?: Int.MAX_VALUE
         }
 
-        fun check(p: Point, distance: Int, height: Int) {
+        fun walk(p: Point, distance: Int, height: Int) {
             if (p.x !in heightmap.indices || p.y !in 0 until heightmap[0].size) return
             if (height <= height(p) + 1) {
                 enqueue(p, distance)
@@ -71,13 +69,12 @@ fun main() {
         val endingPoints = mutableListOf<Point>()
         val terrain = Terrain(input)
 
-        terrain.heightmap.forEachIndexed { x, _ ->
-            terrain.heightmap[x].forEachIndexed { y, _ ->
+        terrain.heightmap
+            .forEach { x, y ->
                 val c = terrain.heightmap[x][y]
                 if (c == 'a' || c == 'S') {
                     endingPoints += Point(x, y)
                 }
-            }
         }
 
         val start = terrain.find('E')
