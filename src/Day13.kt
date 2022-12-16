@@ -1,90 +1,69 @@
-fun main() {
+private sealed class Packet : Comparable<Packet> {
+    companion object {
+        fun of(input: String): Packet =
+            of(input.split("""((?<=[\[\],])|(?=[\[\],]))""".toRegex())
+                    .filter { it.isNotBlank() }
+                    .filter { it != "," }
+                    .iterator()
+            )
 
-    fun List<Char>.findClosing(start: Int): Int {
-        this.forEachIndexed { i, c ->
-            if (i > start && c == ']') {
-                return i
-            }
-        }
-
-        error("closing ] not found")
-    }
-
-    fun parse(s: String): Any {
-        var i = 0
-        fun next(): Any {
-            if (s[i] == '[') {
-                i++
-                val res = ArrayList<Any>()
-                while(true) {
-                    if (s[i] == ']') {
-                        i++
-                        return res
-                    }
-                    res.add(next())
-                    if (s[i] == ']') {
-                        i++
-                        return res
-                    }
-                    check(s[i] == ',')
-                    i++
+        private fun of(input: Iterator<String>): Packet {
+            val packets = mutableListOf<Packet>()
+            while (input.hasNext()) {
+                when (val symbol = input.next()) {
+                    "]" -> return ListPacket(packets)
+                    "[" -> packets.add(of(input))
+                    else -> packets.add(IntPacket(symbol.toInt()))
                 }
             }
-            check(s[i] in '0'..'9')
-            var num = 0
-            while (s[i] in '0'..'9') {
-                num = num * 10 + (s[i] - '0')
-                i++
-            }
-            return num
+            return ListPacket(packets)
         }
-        val res = next()
-        check(i == s.length)
-        return res
+    }
+}
+
+private class IntPacket(val amount: Int) : Packet() {
+    fun asList(): Packet = ListPacket(listOf(this))
+
+    override fun compareTo(other: Packet): Int =
+        when (other) {
+            is IntPacket -> amount.compareTo(other.amount)
+            is ListPacket -> asList().compareTo(other)
+        }
+}
+
+private class ListPacket(val subPackets: List<Packet>) : Packet() {
+    override fun compareTo(other: Packet): Int =
+        when (other) {
+            is IntPacket -> compareTo(other.asList())
+            is ListPacket -> subPackets.zip(other.subPackets)
+                .map { it.first.compareTo(it.second) }
+                .firstOrNull { it != 0 } ?: subPackets.size.compareTo(other.subPackets.size)
+        }
+}
+
+fun main() {
+
+    fun parse(input: List<String>): Sequence<Packet> {
+        return input.asSequence().filter { it.isNotBlank() }.map { Packet.of(it) }
     }
 
     fun part1(input: List<String>): Int {
-        val split = input.filterNot { it.isEmpty() }
-        val map = split.map { parse(it) }
-
-
-
-        return 0
+        return parse(input)
+                .chunked(2)
+                .mapIndexed { index, (first, second) ->
+                    if (first < second) index + 1 else 0
+                }.sum()
     }
-
-    fun cmp(a: Any, b: Any): Int {
-        if (a is Int && b is Int) return a.compareTo(b)
-        if (a is List<*> && b is List<*>) {
-            var i = 0
-            while (i < a.size && i < b.size) {
-                val c = cmp(a[i]!!, b[i]!!)
-                if (c != 0) return c
-                i++
-            }
-            return a.size.compareTo(b.size)
-        }
-        if (a is Int) return cmp(listOf(a), b)
-        if (b is Int) return cmp(a, listOf(b))
-        error("!!!")
-    }
-
-    val d1 = parse("[[2]]")
-    val d2 = parse("[[6]]")
-
-    val input = readInput("inputs/Day13")
-    val list = (input.mapNotNull { s ->
-        if (s != "") parse(s) else null
-    } + listOf(d1, d2)).sortedWith { a, b -> cmp(a, b) }
-
-    val i1 = list.indexOf(d1) + 1
-    val i2 = list.indexOf(d2) + 1
-    println(i1 * i2)
 
     fun part2(input: List<String>): Int {
-        return 0
+        val packets = parse(input)
+        val divider1 = Packet.of("[[2]]")
+        val divider2 = Packet.of("[[6]]")
+        val ordered = (packets + divider1 + divider2).sorted()
+        return (ordered.indexOf(divider1) + 1) * (ordered.indexOf(divider2) + 1)
     }
 
-    //val input = readInput("inputs/test")
+    val input = readInput("inputs/Day13")
     println(part1(input))
     println(part2(input))
 }
