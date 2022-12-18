@@ -1,7 +1,5 @@
 fun main() {
 
-    data class Point(val x: Int, val y: Int)
-
     class Terrain constructor(input: List<String>) {
         val distances: HashMap<Point, Int> = HashMap()
         var queue: ArrayDeque<Point> = ArrayDeque()

@@ -8,12 +8,23 @@ import java.security.MessageDigest
 fun readInput(name: String) = File("src", "$name.txt")
     .readLines()
 
-/**
- * Converts string to md5 hash.
- */
-fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray()))
-    .toString(16)
-    .padStart(32, '0')
+fun <T> List<T>.nth(n: Int): T =
+    this[n % size]
+
+data class Point(var x: Int = 0, var y: Int = 0) {
+    operator fun plus(other: Point): Point {
+        return Point(this.x + other.x, this.y + other.y)
+    }
+
+    operator fun plusAssign(p: Point) {
+        x += p.x
+        y += p.y
+    }
+
+    operator fun minus(point: Point): Point {
+        return Point(x + point.x, y - point.y)
+    }
+}
 
 inline fun List<List<Char>>.forEach(block: (row: Int, col: Int) -> Unit) {
     for (i in indices) {

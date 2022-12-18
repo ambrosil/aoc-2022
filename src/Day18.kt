@@ -25,23 +25,27 @@ fun main() {
     fun part2(input: List<String>): Int {
         val cubes = parse(input)
 
-        val xRange = cubes.minOf { it.x } until cubes.maxOf { it.x }
-        val yRange = cubes.minOf { it.y } until cubes.maxOf { it.y }
-        val zRange = cubes.minOf { it.z } until cubes.maxOf { it.y }
-        fun Cube.outOfRange() = (x in xRange && y in yRange && z in zRange).not()
+        val xRange = cubes.minOf { it.x } - 1..cubes.maxOf { it.x } + 1
+        val yRange = cubes.minOf { it.y } - 1..cubes.maxOf { it.y } + 1
+        val zRange = cubes.minOf { it.z } - 1..cubes.maxOf { it.z } + 1
 
-        val allPoints = xRange.flatMap { x -> yRange.flatMap { y -> zRange.map { z -> Cube(x, y, z) } } }
-        val trapped = allPoints.toMutableSet()
+        val queue = ArrayDeque<Cube>().apply { add(Cube(xRange.first, yRange.first, zRange.first)) }
+        val seen = mutableSetOf<Cube>()
+        var sides = 0
 
-        tailrec fun Cube.removeFromTrapped(seen: Set<Cube>) {
-            if (outOfRange()) trapped.removeAll(seen + this)
-            else adjacents().filter { (it !in cubes) && (it !in seen) }.forEach {
-                return it.removeFromTrapped(seen + this)
+        queue.forEach { lookNext ->
+            if (lookNext !in seen) {
+                lookNext.adjacents()
+                    .filter { it.x in xRange && it.y in yRange && it.z in zRange }
+                    .forEach { adj ->
+                        seen += lookNext
+                        if (adj in cubes) sides++
+                        else queue.add(adj)
+                    }
             }
         }
 
-        allPoints.forEach { it.removeFromTrapped(setOf(it)) }
-        return cubes.sumOf { (it.adjacents() - cubes - trapped).size }
+        return sides
     }
 
     val input = readInput("inputs/Day18")

@@ -20,24 +20,22 @@ fun main() {
         }
     }
 
-    data class Point(val x: Int, val y: Int) {
-        fun frequency() = (x * 4_000_000L) + y
+    fun Point.frequency() = (x * 4_000_000L) + y
 
-        infix fun distanceTo(other: Point): Int {
-            return abs(x - other.x) + abs(y - other.y)
-        }
+    infix fun Point.distanceTo(other: Point): Int {
+        return abs(x - other.x) + abs(y - other.y)
+    }
 
-        infix fun lineTo(other: Point): List<Point> {
-            val xDelta = (other.x - x).sign
-            val yDelta = (other.y - y).sign
-            val steps = maxOf(abs(x - other.x), abs(y - other.y))
-            return (1..steps).scan(this) { prev, _ -> Point(prev.x + xDelta, prev.y + yDelta) }
-        }
+    infix fun Point.lineTo(other: Point): List<Point> {
+        val xDelta = (other.x - x).sign
+        val yDelta = (other.y - y).sign
+        val steps = maxOf(abs(x - other.x), abs(y - other.y))
+        return (1..steps).scan(this) { prev, _ -> Point(prev.x + xDelta, prev.y + yDelta) }
+    }
 
-        fun findRange(y: Int, distance: Int): IntRange? {
-            val width = distance - abs(this.y - y)
-            return (this.x - width..this.x + width).takeIf { it.first <= it.last }
-        }
+    fun Point.findRange(y: Int, distance: Int): IntRange? {
+        val width = distance - abs(this.y - y)
+        return (this.x - width..this.x + width).takeIf { it.first <= it.last }
     }
 
     fun parse(input: List<String>): MutableList<Pair<Point, Point>> {

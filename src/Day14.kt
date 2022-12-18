@@ -4,35 +4,6 @@ enum class Type { NONE, SAND, WALL }
 
 fun main() {
 
-    data class Point(var x: Int, var y: Int) {
-        operator fun plusAssign(p: Point) {
-            x += p.x
-            y += p.y
-        }
-
-        operator fun plus(point: Point): Point {
-            return Point(x + point.x, y + point.y)
-        }
-
-        operator fun minus(point: Point): Point {
-            return Point(x + point.x, y - point.y)
-        }
-    }
-
-    fun MutableMap<Point, Type>.print() {
-        for (y in 0..9) {
-            for (x in 494..503) {
-                val type = this[Point(x, y)] ?: NONE
-                when (type) {
-                    NONE -> print("⬛")
-                    WALL -> print("\uD83D\uDFE6")
-                    SAND -> print("\uD83D\uDFE7")
-                }
-            }
-            println()
-        }
-    }
-
     fun parse(input: List<String>): MutableMap<Point, Type> {
         val terrain = mutableMapOf<Point, Type>()
 

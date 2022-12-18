@@ -3,19 +3,12 @@ import kotlin.math.sign
 
 fun main() {
 
-    data class Point(var x: Int, var y: Int) {
-        operator fun plusAssign(p: Point) {
-            x += p.x
-            y += p.y
-        }
+    infix fun Point.follow(head: Point) {
+        val dx = head.x - x
+        val dy = head.y - y
 
-        infix fun follow(head: Point) {
-            val dx = head.x - x
-            val dy = head.y - y
-
-            if (abs(dx) > 1 || abs(dy) > 1) {
-                this += Point(dx.sign, dy.sign)
-            }
+        if (abs(dx) > 1 || abs(dy) > 1) {
+            this += Point(dx.sign, dy.sign)
         }
     }
 
