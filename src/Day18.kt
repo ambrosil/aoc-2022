@@ -33,15 +33,13 @@ fun main() {
         val seen = mutableSetOf<Cube>()
         var sides = 0
 
-        queue.forEach { lookNext ->
-            if (lookNext !in seen) {
-                lookNext.adjacents()
+        queue.forEach { current ->
+            if (current !in seen) {
+                seen += current
+
+                current.adjacents()
                     .filter { it.x in xRange && it.y in yRange && it.z in zRange }
-                    .forEach { adj ->
-                        seen += lookNext
-                        if (adj in cubes) sides++
-                        else queue.add(adj)
-                    }
+                    .forEach { adj -> if (adj in cubes) sides++ else queue.add(adj) }
             }
         }
 

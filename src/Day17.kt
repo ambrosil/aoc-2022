@@ -40,12 +40,12 @@ class Day17(input: String) {
     }
 
     private fun calculateHeight(targetBlockCount: Long): Long {
-        data class State(val ceiling: List<Int>, val blockMod: Int, val jetMod: Int)
+        data class State(val ceiling: List<Int>, val blockIdx: Int, val jetIdx: Int)
 
         val seen: MutableMap<State, Pair<Int, Int>> = mutableMapOf()
         while (true) {
             simulate()
-            val state = State(cave.normalizedCaveCeiling(), blockCounter % shapes.size, jetCounter % jets.size)
+            val state = State(cave.heuristicPrevious(), blockCounter % shapes.size, jetCounter % jets.size)
             if (state in seen) {
                 val (blockCountAtLoopStart, heightAtLoopStart) = seen.getValue(state)
                 val blocksPerLoop = blockCounter - 1L - blockCountAtLoopStart
@@ -69,16 +69,13 @@ class Day17(input: String) {
     private fun Set<Point>.minY(): Int = minOf { it.y }
     private fun Set<Point>.height(): Int = minY().absoluteValue
 
-    private fun Set<Point>.normalizedCaveCeiling(): List<Int> {
-        val let = groupBy { it.x }
-            .entries
-            .sortedBy { it.key }
-            .map { pointList -> pointList.value.minBy { point -> point.y } }
-            .let {
-                val normalTo = this.minY()
-                it.map { point -> normalTo - point.y }
-            }
-        return let
+    private fun Set<Point>.heuristicPrevious(): List<Int> {
+        return groupBy { it.x }
+                .map { pointList -> pointList.value.minBy { it.y } }
+                .let {
+                    val normalTo = minY()
+                    it.map { point -> normalTo - point.y }
+                }
     }
 
     private fun Set<Point>.moveToStart(ceilingHeight: Int): Set<Point> =
