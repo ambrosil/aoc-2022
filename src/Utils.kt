@@ -1,12 +1,18 @@
 import java.io.File
-import java.math.BigInteger
-import java.security.MessageDigest
 
 /**
  * Reads lines from the given input txt file.
  */
 fun readInput(name: String) = File("src", "$name.txt")
     .readLines()
+
+fun String.allInts() = allIntsInString(this)
+fun allIntsInString(line: String): List<Int> {
+    return """-?\d+""".toRegex().findAll(line)
+        .map { it.value.toInt() }
+        .toList()
+}
+
 
 fun <T> List<T>.nth(n: Int): T =
     this[n % size]
