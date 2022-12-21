@@ -1,29 +1,26 @@
 fun main() {
 
     data class Monkey(val name: String, val expr: String)
-
-    fun part1(input: List<String>): Long {
-        val monkeys = input.map {
-            var (name, expr) = it.split(":")
-            Monkey(name, expr.trim())
+    fun Monkey.evaluateExpr(map: MutableMap<String, Long>): Long? {
+        val parts = this.expr.split(" ")
+        if (parts.size == 1) {
+            return parts[0].toLong()
         }
 
-        val map = mutableMapOf<String, Long>()
+        val name1 = parts.first()
+        val name2 = parts.last()
+        val operator = parts[1]
 
-        fun Monkey.calcExpr(): Long? {
-            val parts = this.expr.split(" ")
-            if (parts.size == 1) {
-                return parts[0].toLong()
+        if (operator == "=") {
+            if (name1 in map) {
+                map[name2] = map[name1]!!
+            } else if (name2 in map) {
+                map[name1] = map[name2]!!
             }
-
-            val name1 = parts.first()
-            val name2 = parts.last()
-
+        } else {
             if (name1 in map && name2 in map) {
                 val value1 = map[name1]!!
                 val value2 = map[name2]!!
-                val operator = parts[1]
-
                 return when (operator) {
                     "+" -> value1 + value2
                     "-" -> value1 - value2
@@ -32,89 +29,62 @@ fun main() {
                     else -> null
                 }
             }
-
-            return null
         }
 
-        while (map["root"] == null) {
-            monkeys.forEach {
-                if (map[it.name] == null) {
-                    val calcExpr = it.calcExpr()
-                    if (calcExpr != null) {
-                        map[it.name] = calcExpr
-                    }
-                }
-            }
+        return null
+    }
+    fun Monkey.variants(): List<Monkey> {
+        val parts = this.expr.split(" ")
+        if (parts.size == 1) {
+            return listOf(this)
         }
 
-        return map["root"]!!
+        val name1 = parts.first()
+        val name2 = parts.last()
+        val operator = parts[1]
+
+        return when (operator) {
+            "+" -> listOf(this, Monkey(name1, "$name - $name2"), Monkey(name2, "$name - $name1"))
+            "-" -> listOf(this, Monkey(name1, "$name + $name2"), Monkey(name2, "$name1 - $name"))
+            "*" -> listOf(this, Monkey(name1, "$name / $name2"), Monkey(name2, "$name / $name1"))
+            "/" -> listOf(this, Monkey(name1, "$name * $name2"), Monkey(name2, "$name1 / $name"))
+            else -> listOf(this)
+        }
     }
 
-    fun trywith(input: List<String>, n: Long): Long {
-        val monkeys = input.map {
-            var (name, expr) = it.split(":")
-
-            if (name == "root") {
-                expr = expr.replace("+", "=")
-            }
-
-            Monkey(name, expr.trim())
-        }
-
+    fun List<Monkey>.calc(need: String): Long {
         val map = mutableMapOf<String, Long>()
-        map["humn"] = n
 
-        fun Monkey.calcExpr(): Long? {
-            val parts = this.expr.split(" ")
-            if (parts.size == 1) {
-                return parts[0].toLong()
-            }
-
-            val name1 = parts.first()
-            val name2 = parts.last()
-
-            if (name1 in map && name2 in map) {
-                val value1 = map[name1]!!
-                val value2 = map[name2]!!
-                val operator = parts[1]
-
-                return when (operator) {
-                    "+" -> value1 + value2
-                    "-" -> value1 - value2
-                    "*" -> value1 * value2
-                    "/" -> value1 / value2
-                    "=" -> if (value1 == value2) 1 else -1
-                    else -> null
-                }
-            }
-
-            return null
-        }
-
-        while (map["root"] == null) {
-            monkeys.forEach {
+        while (need !in map) {
+            forEach {
                 if (map[it.name] == null) {
-                    val calcExpr = it.calcExpr()
-                    if (calcExpr != null) {
-                        map[it.name] = calcExpr
+                    it.evaluateExpr(map)?.let { result ->
+                        map[it.name] = result
                     }
                 }
             }
         }
 
-        return map["root"]!!
+        return map[need]!!
     }
 
-    fun part2(input: List<String>): Long {
-        var n = 0L
-
-        while (true) {
-            val res = trywith(input, n++)
-            if (res == 1L) {
-                return n-1
+    fun part1(input: List<String>) =
+        input.map {
+                val (name, expr) = it.split(": ")
+                Monkey(name, expr)
             }
-        }
-    }
+            .calc("root")
+
+    fun part2(input: List<String>) =
+        input.flatMap {
+                val (name, expr) = it.split(": ")
+                when (name) {
+                    "root" -> Monkey(name, expr.replace("+", "=")).variants()
+                    else -> Monkey(name, expr).variants()
+                }
+            }
+            .filterNot { it.name == "humn" && it.expr.split(" ").size == 1 }
+            .calc("humn")
 
     val input = readInput("inputs/Day21")
     println(part1(input))
