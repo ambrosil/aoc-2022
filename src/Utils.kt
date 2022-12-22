@@ -17,9 +17,24 @@ fun allIntsInString(line: String): List<Int> {
 fun <T> List<T>.nth(n: Int): T =
     this[n % size]
 
+inline fun <T> List<T>.indexOfLast(predicate: (T) -> Boolean): Int {
+    for (i in this.indices.reversed()) {
+        if (predicate(this[i])) {
+            return i
+        }
+    }
+
+    return -1
+}
+
 data class Point(var x: Int = 0, var y: Int = 0) {
     operator fun plus(other: Point): Point {
         return Point(this.x + other.x, this.y + other.y)
+    }
+
+    fun set(x: Int, y: Int) {
+        this.x = x
+        this.y = y
     }
 
     operator fun plusAssign(p: Point) {
