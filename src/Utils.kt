@@ -32,6 +32,14 @@ data class Point(var x: Int = 0, var y: Int = 0) {
         return Point(this.x + other.x, this.y + other.y)
     }
 
+    fun adjacents(): Set<Point> =
+        setOf(
+            copy(x = x - 1),
+            copy(x = x + 1),
+            copy(y = y - 1),
+            copy(y = y + 1)
+        )
+
     fun set(x: Int, y: Int) {
         this.x = x
         this.y = y
